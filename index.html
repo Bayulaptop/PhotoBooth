@@ -1,0 +1,205 @@
+<!DOCTYPE html>
+<html lang="id">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>PhotoBooth</title>
+
+    <!-- css ordinary start -->
+    <style>
+      body {
+        font-family: Arial, sans-serif;
+        text-align: center;
+        background-image: url(img/127.jpg);
+        background-repeat: no-repeat;
+        background-position: center;
+        background-size: cover;
+        background-attachment: fixed;
+        height: 100vh;
+        margin: 0;
+        padding: 0;
+      }
+
+      nav {
+        background-color: rgb(27, 25, 37);
+      }
+
+      #video,
+      #canvas {
+        width: 100%;
+        max-width: 500px;
+        border-radius: 10px;
+        border: 2px solid #333;
+      }
+
+      .controls {
+        margin-top: 10px;
+      }
+
+      .text {
+        color: black;
+        text-shadow: 3px 2px 1px rgb(158, 217, 240);
+      }
+      button {
+        padding: 10px;
+        margin: 5px;
+        font-size: 16px;
+        cursor: pointer;
+        background-color: rgba(190, 191, 192, 0.685);
+      }
+      button:hover {
+        background-color: aliceblue;
+        box-shadow: 2px 2px 2px rgba(29, 23, 23, 0.685);
+      }
+
+      .gallery img {
+        width: 100px;
+        margin: 5px;
+        border-radius: 5px;
+        border: 2px solid #333;
+      }
+      .gallery {
+        display: flex;
+        flex-wrap: wrap;
+        justify-content: center;
+        margin-top: 10px;
+      }
+    </style>
+    <!-- css ordinary end -->
+
+    <!-- link cdn bootstrap-->
+    <link
+      href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css"
+      rel="stylesheet"
+      integrity="sha384-QWTKZyjpPEjISv5WaRU9OFeRpok6YctnYmDr5pNlyT2bRjXh0JMhjY6hW+ALEwIH"
+      crossorigin="anonymous"
+    />
+  </head>
+
+  <body style="height: 100vh">
+    <!-- Navbar start-->
+    <nav class="navbar absolute-top">
+      <div class="container-fluid">
+        <h1 class="text-light">📸PhotoBooth</h1>
+      </div>
+    </nav>
+    <!-- Navbar end-->
+
+    <!-- content start-->
+    <div class="container text-center mt-4">
+      <div class="row">
+        <h1 class="text">PhotoBooth</h1>
+
+        <div class="col">
+          <video id="video" autoplay></video>
+          <canvas id="canvas" style="display: none"></canvas>
+        </div>
+        <div class="controls mt-4">
+          <button class="col-sm-3 mb-2 rounded-pill" onclick="takePhoto()">
+            📸 Ambil Foto
+          </button>
+          <button
+            class="col-sm-3 mb-2 rounded-pill"
+            onclick="applyFilter('grayscale(100%)')"
+          >
+            🔳 Grayscale
+          </button>
+          <button
+            class="col-sm-3 mb-2 rounded-pill"
+            onclick="applyFilter('sepia(100%)')"
+          >
+            🟠 Sepia
+          </button>
+          <button
+            class="col-sm-3 mb-2 rounded-pill"
+            onclick="applyFilter('invert(100%)')"
+          >
+            🔀 Invert
+          </button>
+          <button
+            class="col-sm-3 mb-2 rounded-pill"
+            onclick="applyFilter('blur(5px)')"
+          >
+            🌫 Blur
+          </button>
+          <button class="col-sm-3 mb-2 rounded-pill" onclick="resetFilter()">
+            ❌ Reset
+          </button>
+        </div>
+        <div class="col-12 mt-2">
+          <h2>Gallery</h2>
+          <div class="gallery" id="gallery"></div>
+        </div>
+      </div>
+    </div>
+    <!-- content end-->
+
+    <!-- script bootsrap start-->
+    <script
+      src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"
+      integrity="sha384-YvpcrYf0tY3lHB60NNkmXc5s9fDVZLESaAA55NDzOxhy9GkcIdslK1eN7N6jIeHz"
+      crossorigin="anonymous"
+    ></script>
+    <!-- script bootsrap end-->
+
+    <!-- scripct ordinary start-->
+    <script>
+      //-- input Id from html fo variabel --
+      const video = document.getElementById("video");
+      const canvas = document.getElementById("canvas");
+      const ctx = canvas.getContext("2d");
+      const gallery = document.getElementById("gallery");
+
+      //-- Aceses to  Kamera --
+      async function startCamera() {
+        try {
+          const stream = await navigator.mediaDevices.getUserMedia({
+            video: true,
+          });
+          video.srcObject = stream;
+        } catch (err) {
+          alert("Gagal mengakses kamera: " + err.message);
+        }
+      }
+
+      startCamera();
+
+      //-- Button for Take  Foto --
+      function takePhoto() {
+        canvas.width = video.videoWidth;
+        canvas.height = video.videoHeight;
+        ctx.drawImage(video, 0, 0, canvas.width, canvas.height);
+
+        //-- Buat elemen gambar baru--
+        const img = document.createElement("img");
+        img.src = canvas.toDataURL("image/png");
+
+        //-- Tambah ke gallery --
+        const container = document.createElement("div");
+        container.appendChild(img);
+
+        //-- Button for get downloader png --
+        const link = document.createElement("a");
+        link.href = img.src;
+        link.download = "photobooth.png";
+        link.innerText = "⬇ Download";
+        link.style.display = "block";
+        link.style.marginTop = "5px";
+
+        container.appendChild(link);
+        gallery.appendChild(container);
+      }
+
+      //-- Button for get Filter --
+      function applyFilter(filter) {
+        video.style.filter = filter;
+      }
+
+      //-- Button Reset Filter --
+      function resetFilter() {
+        video.style.filter = "none";
+      }
+    </script>
+    <!-- scripct ordinary end-->
+  </body>
+</html>
